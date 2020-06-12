@@ -7,12 +7,8 @@ app = Flask('app')
 def index():
   return render_template("main.html")
 
-@app.route('/results/', methods=['GET', 'POST'])
+@app.route("/results/", methods=['GET', 'POST'])
 def results():
-  return render_template("resultsPreloader.html")
-
-@app.route("/results/loaded/", methods=['GET', 'POST'])
-def resultsLoaded():
   if request.method == 'POST':
     name = request.form.get('name')
     shows = getShows(name)
