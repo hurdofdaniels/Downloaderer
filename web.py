@@ -17,17 +17,18 @@ def results():
 
     i = 0
     while i < len(shows):
-      showsHTML += '''<div class="panel">
-      <h1>{pageTitle}</h1>
-      <div class="overlay-container">
-        <img src="{imgURL}" alt="{pageTitle}" id="picture" width="400" height="600" onload="imgSize();">
-        <div class="overlay">
-          <p>Seasons: {seasons}, Episodes: {episodes}, {genreName}: {genre}</p>
+      if shows[i][1] != 0 and shows[i][2] != 0:
+        showsHTML += '''<div class="panel">
+        <h1>{pageTitle}</h1>
+        <div class="overlay-container">
+          <img src="{imgURL}" alt="{pageTitle}" id="picture" onload="imgSize(this);">
+          <div class="overlay">
+            <p>Seasons: {seasons}, Episodes: {episodes}{genreName} {genre}</p>
+          </div>
         </div>
-      </div>
-    </div>'''.format(pageTitle=shows[i][0], imgURL=shows[i][4], seasons=shows[i][1], episodes=shows[i][2], genre=", ".join(shows[i][3]), genreName="Genre" if len(shows[i][3]) == 1 else "Genres")
+      </div>'''.format(pageTitle=shows[i][0], imgURL=shows[i][4], seasons=shows[i][1], episodes=shows[i][2], genre=", ".join(shows[i][3]), genreName=", Genres:" if len(shows[i][3]) > 1 else ", Genre:" if len(shows[i][3]) == 1 else "")
       i += 1
-
+         #
     return render_template("results.html", resultInfo=Markup(showsHTML))
     #return "NULL"
   elif request.method == 'GET':

@@ -12,6 +12,7 @@
         .panel {
             text-align: center;
             display: inline-block;
+            padding: 1rem 1rem 1rem 1rem;
         }
 
         .overlay-container {
@@ -27,81 +28,19 @@
           padding: 0.4rem;
           background-color: rgba(255, 255, 255, 1.0);
         }
-        .loader {
-          border: 16px solid #f3f3f3;
-          border-radius: 50%;
-          border-top: 16px solid #3498db;
-          width: 120px;
-          height: 120px;
-          -webkit-animation: spin 2s linear infinite; /* Safari */
-          animation: spin 2s linear infinite;
-        }
-
-        /* Safari */
-        @-webkit-keyframes spin {
-          0% { -webkit-transform: rotate(0deg); }
-          100% { -webkit-transform: rotate(360deg); }
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        /* Add animation to "page content" */
-    .animate-bottom {
-      position: relative;
-      -webkit-animation-name: animatebottom;
-      -webkit-animation-duration: 1s;
-      animation-name: animatebottom;
-      animation-duration: 1s
-    }
-
-    @-webkit-keyframes animatebottom {
-      from { bottom:-100px; opacity:0 } 
-      to { bottom:0px; opacity:1 }
-    }
-
-    @keyframes animatebottom { 
-      from{ bottom:-100px; opacity:0 } 
-      to{ bottom:0; opacity:1 }
-    }
-
-    #page {
-      display: none;
-      text-align: center;
-    }
     </style>
     <script>
-        function showPage() {
-            document.getElementById("loader").style.display = "none";
-            document.getElementById("page").style.display = "block";
-        }
-
-        function imgSize() {
-            var myImg = document.getElementById('picture');
-            var newWidth = myImg.clientWidth / (myImg.clientHeight / 600);
+        function imgSize(_item) {
+            var newWidth = _item.clientWidth / (_item.clientHeight / 600);
             var newHeight = 600;
-            myImg.width = newWidth;
-            myImg.height = newHeight;
+            _item.width = newWidth;
+            _item.height = newHeight;
         }
-
-        function on() {
-            document.getElementById("overlay").style.display = "block";
-        }
-
-        function off() {
-            document.getElementById("overlay").style.display = "none";
-        }
-        window.onload = showPage();
     </script>
     <title>Document</title>
 </head>
-<body onload="showPage();">
-    <div class="loader" id="loader"></div>
-    <div style="display:none;" id="page" class="animate-bottom">
-        {{resultInfo}}
-    </div>
+<body>
+    {{resultInfo}}
     <script>
         
     </script>
