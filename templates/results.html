@@ -5,14 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .element::-webkit-scrollbar { width: 0 !important }
+
         h1, p {
             font-family: 'Roboto', sans-serif;
         }
 
         .panel {
+            user-select: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            cursor: default;
             text-align: center;
             display: inline-block;
             padding: 1rem 1rem 1rem 1rem;
+            transition: transform .2s;
+        }
+
+        .panel:hover {
+            cursor: pointer;
+            -ms-transform: scale(1.1);
+            -webkit-transform: scale(1.1);
+            transform: scale(1.1);
         }
 
         .overlay-container {
@@ -37,10 +65,10 @@
             _item.height = newHeight;
         }
     </script>
-    <title>Document</title>
+    <title>{{ pageTitle }} - Downloaderer</title>
 </head>
 <body>
-    {{resultInfo}}
+    {{ resultInfo }}
     <script>
         
     </script>

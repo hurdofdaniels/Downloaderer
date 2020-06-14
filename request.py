@@ -1,11 +1,15 @@
-import requests, json
+from __future__ import unicode_literals
+import requests, json, youtube_dl
 from json import loads
+from bs4 import BeautifulSoup
 
 JSON = open("secret.json", "r")
 
 SECRET = json.load(JSON)
 
 API_KEY = SECRET["API_KEY"]
+
+NON_PIRATE = ["10play"]
 
 def getShows(QUERY):
     URL_ID = 'https://api.themoviedb.org/3/search/multi?api_key={}&language=en-US&query={}'.format(API_KEY, QUERY)
@@ -31,6 +35,11 @@ def getShows(QUERY):
             show_name = json["name"]
             seasons = json["number_of_seasons"]
             episodes = json["number_of_episodes"]
+            bg_path = "https://image.tmdb.org/t/p/original{}".format(json["poster_path"])
+            if json["poster_path"] == None:
+                bg_path = "https://upload.wikimedia.org/wikipedia/commons/f/fc/No_picture_available.png"
+                
+            show_id = json["id"]
 
             data = []
 
@@ -38,7 +47,9 @@ def getShows(QUERY):
             data.append(seasons)
             data.append(episodes)
             data.append(genre_list)
-            data.append("https://image.tmdb.org/t/p/original{}".format(json["poster_path"]))
+            data.append(bg_path)
+            data.append(show_id)
+            data.append('tv')
 
             cachedData.append(data)
             
@@ -48,6 +59,27 @@ def getShows(QUERY):
             json = response.json()
 
     return cachedData
+
+def getShowInfo(QUERY_TYPE, QUERY_ID):
+    URL = 'https://api.themoviedb.org/3/{}/{}?api_key={}&language=en-US'.format(QUERY_TYPE, QUERY_ID, API_KEY)
+    response = requests.get(url = URL)
+    json = response.json()
+    htmlPage = json["homepage"]
+#    ydl_opts = {
+#        'geo_bypass_country': 'au',
+#        'quiet': True,
+#        'outtmpl': 'DOWNLOADS/%(title)s - %(alt_title)s.%(ext)s'
+#    }
+#    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+#        print("Downloading file")
+#        ydl.download(["https://10play.com.au/masterchef/episodes/season-12/episode-1/tpv200411duoxs"])
+#        print("Downloaded file")
+    soup = BeautifulSoup(requests.get(url = htmlPage).text, 'html.parser')
+    itemsHolder = soup.find('div', {'class', 'slick-track'})
+    # Search how to extract HREF from links
+#    for child in itemsHolder.findChildren('div', recursive=False):
+#        print(child.find('a', {'class', 'card__link'})['href'])
+    return json
 
 def getTorrents(QUERY):
     URL = 'http://sg.media-imdb.com/suggests/{}/{}.json'.format(QUERY[0].lower(), QUERY.lower())
