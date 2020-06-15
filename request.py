@@ -65,34 +65,33 @@ def getShowInfo(QUERY_TYPE, QUERY_ID):
     response = requests.get(url = URL)
     json = response.json()
     htmlPage = json["homepage"]
-#    ydl_opts = {
-#        'geo_bypass_country': 'au',
-#        'quiet': True,
-#        'outtmpl': 'DOWNLOADS/%(title)s - %(alt_title)s.%(ext)s'
-#    }
-#    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-#        print("Downloading file")
-#        ydl.download(["https://10play.com.au/masterchef/episodes/season-12/episode-1/tpv200411duoxs"])
-#        print("Downloaded file")
-    soup = BeautifulSoup(requests.get(url = htmlPage).text, 'lxml')
-    itemsHolder = soup.find('div', {'class', 'slick-track'})
-    # Search how to extract HREF from links
-    print(itemsHolder)
-    index = 0
-    mainData = []
-    for info in itemsHolder.findAll('a', href=True, attrs={'class', 'card__link'}):
-        if info != None:
-            tmpData = []
-            print(info['href'])
-            tmpData.append("https://10play.com.au{URL}".format(URL=info['href']))
-            print(info.find('h4', attrs={'class', 'card__title'}).string)
-            tmpData.append(info.find('h4', attrs={'class', 'card__title'}).string)
-            print(info.find('h5', attrs={'class', 'card__info'}).string)
-            tmpData.append(info.find('h5', attrs={'class', 'card__info'}).string)
-            print(index)
-            mainData.append(tmpData)
-        index += 1
-    return json
+    if htmlPage.split('://')[1].split(".")[0] in NON_PIRATE:
+        print(htmlPage)
+#        ydl_opts = {
+#            'geo_bypass_country': 'au',
+#            'quiet': True,
+#            'outtmpl': 'DOWNLOADS/%(title)s - %(alt_title)s.%(ext)s'
+#        }
+#        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+#            print("Downloading file")
+#            ydl.download(["https://10play.com.au/masterchef/episodes/season-12/episode-1/tpv200411duoxs"])
+#            print("Downloaded file")
+        soup = BeautifulSoup(requests.get(url = htmlPage).text, 'lxml')
+        itemsHolder = soup.find('div', {'class', 'slick-track'})
+        mainData = []
+        for info in itemsHolder.findAll('a', href=True, attrs={'class', 'card__link'}):
+            if info != None:
+                tmpData = []
+                #print(info['href'])
+                tmpData.append("https://10play.com.au{URL}".format(URL=info['href']))
+                #print(info.find('h4', attrs={'class', 'card__title'}).string)
+                tmpData.append(info.find('h4', attrs={'class', 'card__title'}).string)
+                #print(info.find('h5', attrs={'class', 'card__info'}).string)
+                tmpData.append(info.find('h5', attrs={'class', 'card__info'}).string)
+                mainData.append(tmpData)
+    else:
+        mainData = "Feature not yet added!"
+    return mainData
 
 def getTorrents(QUERY):
     URL = 'http://sg.media-imdb.com/suggests/{}/{}.json'.format(QUERY[0].lower(), QUERY.lower())

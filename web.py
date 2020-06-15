@@ -15,9 +15,8 @@ def results():
     
     showsHTML = ""
 
-    i = 0
-    while i < len(shows):
-      if shows[i][1] != 0 and shows[i][2] != 0:
+    for show in shows:
+      if show[1] != 0 and show[2] != 0:
         showsHTML += '''<div class="panel" onclick="location.href='/results/{showID}-{type}'">
         <h1>{showTitle}</h1>
         <div class="overlay-container">
@@ -26,8 +25,7 @@ def results():
             <p>Seasons: {seasons}, Episodes: {episodes}{genreName} {genre}</p>
           </div>
         </div>
-      </div>'''.format(showTitle=shows[i][0], showID=shows[i][5], type=shows[i][6], imgURL=shows[i][4], seasons=shows[i][1], episodes=shows[i][2], genre=", ".join(shows[i][3]), genreName=", Genres:" if len(shows[i][3]) > 1 else ", Genre:" if len(shows[i][3]) == 1 else "")
-      i += 1
+      </div>'''.format(showTitle=show[0], showID=show[5], type=show[6], imgURL=show[4], seasons=show[1], episodes=show[2], genre=", ".join(show[3]), genreName=", Genres:" if len(show[3]) > 1 else ", Genre:" if len(show[3]) == 1 else "")
          #
     return render_template("results.html", pageTitle=name, resultInfo=Markup(showsHTML))
     #return "NULL"
@@ -39,7 +37,14 @@ def results():
 def resultsInfo(pageID, pageType):
   data = getShowInfo(pageType, pageID)
 
-  return data
+  rawHTML = ""
+
+  for info in data:
+    rawHTML += '''<h1>{Name}</h1>
+    <p>{Description}<p>
+    <br>'''.format(Name=info[1], Description=info[2])
+  
+  return render_template('downloads.html', downloadContent=Markup(rawHTML))
 
 @app.route('/raw/', methods=['GET', 'POST'])
 def raw():
