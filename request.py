@@ -74,11 +74,24 @@ def getShowInfo(QUERY_TYPE, QUERY_ID):
 #        print("Downloading file")
 #        ydl.download(["https://10play.com.au/masterchef/episodes/season-12/episode-1/tpv200411duoxs"])
 #        print("Downloaded file")
-    soup = BeautifulSoup(requests.get(url = htmlPage).text, 'html.parser')
+    soup = BeautifulSoup(requests.get(url = htmlPage).text, 'lxml')
     itemsHolder = soup.find('div', {'class', 'slick-track'})
     # Search how to extract HREF from links
-#    for child in itemsHolder.findChildren('div', recursive=False):
-#        print(child.find('a', {'class', 'card__link'})['href'])
+    print(itemsHolder)
+    index = 0
+    mainData = []
+    for info in itemsHolder.findAll('a', href=True, attrs={'class', 'card__link'}):
+        if info != None:
+            tmpData = []
+            print(info['href'])
+            tmpData.append("https://10play.com.au{URL}".format(URL=info['href']))
+            print(info.find('h4', attrs={'class', 'card__title'}).string)
+            tmpData.append(info.find('h4', attrs={'class', 'card__title'}).string)
+            print(info.find('h5', attrs={'class', 'card__info'}).string)
+            tmpData.append(info.find('h5', attrs={'class', 'card__info'}).string)
+            print(index)
+            mainData.append(tmpData)
+        index += 1
     return json
 
 def getTorrents(QUERY):
