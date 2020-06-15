@@ -76,19 +76,37 @@ def getShowInfo(QUERY_TYPE, QUERY_ID):
 #            print("Downloading file")
 #            ydl.download(["https://10play.com.au/masterchef/episodes/season-12/episode-1/tpv200411duoxs"])
 #            print("Downloaded file")
-        soup = BeautifulSoup(requests.get(url = htmlPage).text, 'lxml')
-        itemsHolder = soup.find('div', {'class', 'slick-track'})
+        soup = BeautifulSoup(requests.get(url = htmlPage).text, 'html.parser')
+        tmpElement = soup.find("div", {"class", "slick-slide"})
+
         mainData = []
-        for info in itemsHolder.findAll('a', href=True, attrs={'class', 'card__link'}):
-            if info != None:
-                tmpData = []
-                #print(info['href'])
-                tmpData.append("https://10play.com.au{URL}".format(URL=info['href']))
-                #print(info.find('h4', attrs={'class', 'card__title'}).string)
-                tmpData.append(info.find('h4', attrs={'class', 'card__title'}).string)
-                #print(info.find('h5', attrs={'class', 'card__info'}).string)
-                tmpData.append(info.find('h5', attrs={'class', 'card__info'}).string)
-                mainData.append(tmpData)
+        index = 0
+        while index < json["last_episode_to_air"]["episode_number"]:
+            print()
+            # Fix this!
+            # AttributeError: 'NoneType' object has no attribute 'next_sibling'
+            tmpElement = tmpElement.next_sibling
+            index += 1
+#        for info in soup.find('div', {'class', 'slick-list'}).find_all('a'):
+#            if info != None:
+#                tmpData = []
+#
+#                print(info['href'])
+#
+#                tmpData.append("https://10play.com.au{URL}".format(URL=info['href']))
+#
+#                print(info.find('h4', attrs={'class', 'card__title'}).string)
+#
+#                tmpData.append(info.find('h4', attrs={'class', 'card__title'}).string)
+#
+#                print(info.find('h5', attrs={'class', 'card__info'}).string)
+#
+#                tmpData.append(info.find('h5', attrs={'class', 'card__info'}).string)
+#
+#                mainData.append(tmpData)
+#                info.decompose()
+#        print(soup.find('div', {'class', 'slick-list'}).find_all('a'))
+#        mainData.reverse()
     else:
         mainData = "Feature not yet added!"
     return mainData
