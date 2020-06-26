@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
-import requests, json, youtube_dl
-from json import loads
+import requests, json, youtube_dl, re
 from bs4 import BeautifulSoup
 
 JSON = open("secret.json", "r")
@@ -76,17 +75,18 @@ def getShowInfo(QUERY_TYPE, QUERY_ID):
 #            print("Downloading file")
 #            ydl.download(["https://10play.com.au/masterchef/episodes/season-12/episode-1/tpv200411duoxs"])
 #            print("Downloaded file")
-        soup = BeautifulSoup(requests.get(url = htmlPage).text, 'html.parser')
-        tmpElement = soup.find("div", {"class", "slick-slide"})
+        soup = BeautifulSoup(requests.get(htmlPage).text, 'html.parser')
+
+        showData = soup.find('div', {'class', 'content__wrapper--inner'}).find_all('script')[1].string
+
+        # When loading in JSON data with the loads function i get the error as follows, Fix it to make the program run!
+        # AttributeError: 'dict' object has no attribute 'loads'
+        javasciptData = json.loads(showData.split("const showPageData = ")[1].replace("};", '}'))#json.loads(showData.split("const showPageData = ")[1].replace("};", '}')) #loads(showData.split("const showPageData")[1].split(';')[0]) 
+        
+        print(javasciptData)#['subnavs']['content'])
 
         mainData = []
-        index = 0
-        while index < json["last_episode_to_air"]["episode_number"]:
-            print()
-            # Fix this!
-            # AttributeError: 'NoneType' object has no attribute 'next_sibling'
-            tmpElement = tmpElement.next_sibling
-            index += 1
+
 #        for info in soup.find('div', {'class', 'slick-list'}).find_all('a'):
 #            if info != None:
 #                tmpData = []
@@ -118,7 +118,7 @@ def getTorrents(QUERY):
     start = r.text.find("(")
     end = r.text.find(")")
 
-    data = loads(r.text[start + 1:end])["d"][0]["id"]
+    data = json.loads(r.text[start + 1:end])["d"][0]["id"]
 
     URL = 'https://eztv.io/api/get-torrents?imdb_id={}'.format(data)
     r = requests.get(url = URL)
