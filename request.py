@@ -1,14 +1,21 @@
+# Import all needed modules
 from __future__ import unicode_literals
 import requests, json, youtube_dl, re
 from bs4 import BeautifulSoup
 
-JSON = open("secret.json", "r")
+# Open the secret.json file
+SECRET_FILE = open("secret.json", "r")
 
-SECRET = json.load(JSON)
+# Load it into the SECRET variable
+SECRET = json.load(SECRET_FILE)
 
+# Set API_KEY to API_KEY from SECRET
 API_KEY = SECRET["API_KEY"]
 
+# The inner web url for free shows
 NON_PIRATE = ["10play"]
+# The full url for free shows, The list index must match the NON_PIRATE list!
+NON_PIRATE_URL = ["https://10play.com.au"]
 
 def getShows(QUERY):
     URL_ID = 'https://api.themoviedb.org/3/search/multi?api_key={}&language=en-US&query={}'.format(API_KEY, QUERY)
@@ -62,8 +69,8 @@ def getShows(QUERY):
 def getShowInfo(QUERY_TYPE, QUERY_ID):
     URL = 'https://api.themoviedb.org/3/{}/{}?api_key={}&language=en-US'.format(QUERY_TYPE, QUERY_ID, API_KEY)
     response = requests.get(url = URL)
-    json = response.json()
-    htmlPage = json["homepage"]
+    jsonRes = response.json()
+    htmlPage = jsonRes["homepage"]
     if htmlPage.split('://')[1].split(".")[0] in NON_PIRATE:
         print(htmlPage)
 #        ydl_opts = {
@@ -81,11 +88,48 @@ def getShowInfo(QUERY_TYPE, QUERY_ID):
 
         # When loading in JSON data with the loads function i get the error as follows, Fix it to make the program run!
         # AttributeError: 'dict' object has no attribute 'loads'
-        javasciptData = json.loads(showData.split("const showPageData = ")[1].replace("};", '}'))#json.loads(showData.split("const showPageData = ")[1].replace("};", '}')) #loads(showData.split("const showPageData")[1].split(';')[0]) 
+        javasciptData = json.loads(showData.split("const showPageData = ")[1].replace("};", "}")) #json.loads(showData.split("const showPageData = ")[1].replace("};", '}')) #loads(showData.split("const showPageData")[1].split(';')[0]) 
         
-        print(javasciptData)#['subnavs']['content'])
+        extraData = javasciptData["subnavs"][0]["content"][0]["components"][0]["loadMoreUrl"]
+
+        baseURL = NON_PIRATE_URL[NON_PIRATE.index(htmlPage.split('://')[1].split(".")[0])]
+        
+        fullURL = baseURL + extraData
+
+        print(fullURL)
+
+        resJsonShows = requests.get(url = fullURL).json()
+        items = resJsonShows["items"]
 
         mainData = []
+
+        reverse = False
+
+        if "Ep. 1" not in items[0]:
+            reverse = True
+
+        for item in items:
+            tmpData = []
+            print(baseURL + item["cardLink"])
+
+            tmpData.append(baseURL + item["cardLink"])
+
+            print(item["cardTitle"])
+
+            tmpData.append(item["cardTitle"])
+
+            print(item["cardDescription"])
+
+            tmpData.append(item["cardDescription"])
+
+            print(item["cardImage"]["retinaUrl"])
+
+            tmpData.append(item["cardImage"]["retinaUrl"])
+
+            mainData.append(tmpData)
+
+        if reverse == True:
+            mainData.reverse()
 
 #        for info in soup.find('div', {'class', 'slick-list'}).find_all('a'):
 #            if info != None:
