@@ -1,64 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download | Downloaderer</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
-
-        .element::-webkit-scrollbar { width: 0 !important }
-
-        h1, p {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .panel {
-            user-select: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            cursor: default;
-            text-align: center;
-            display: inline-block;
-            padding: 1rem 1rem 1rem 1rem;
-            transition: transform .2s;
-        }
-
-        .panel:hover {
-            cursor: pointer;
-            -ms-transform: scale(1.1);
-            -webkit-transform: scale(1.1);
-            transform: scale(1.1);
-        }
-
-        .overlay-container {
-          position: relative;
-        }
-
-        .overlay-container .overlay {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-
-          padding: 0.4rem;
-          background-color: rgba(255, 255, 255, 1.0);
-        }
-    </style>
-</head>
-<body>
-    {{ downloadContent }}
-</body>
-</html>
+{% extends 'base.html'%}
+{% block title %}
+{{ pageTitle }}
+{% endblock %}
+{% block content %}
+{{ downloadContent }}
+{% endblock %}

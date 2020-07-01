@@ -1,6 +1,6 @@
 # Import all needed modules
 from __future__ import unicode_literals
-import requests, json, youtube_dl, re
+import requests, json, youtube_dl, re#, asyncio
 from bs4 import BeautifulSoup
 
 # Open the secret.json file
@@ -11,6 +11,8 @@ SECRET = json.load(SECRET_FILE)
 
 # Set API_KEY to API_KEY from SECRET
 API_KEY = SECRET["API_KEY"]
+# Set the DOWNLOAD_URL to DOWNLOAD_URL from SECRET
+DOWNLOAD_URL = SECRET["DOWNLOAD_URL"]
 
 # The inner web url for free shows
 NON_PIRATE = ["10play"]
@@ -20,9 +22,9 @@ NON_PIRATE_URL = ["https://10play.com.au"]
 def getShows(QUERY):
     URL_ID = 'https://api.themoviedb.org/3/search/multi?api_key={}&language=en-US&query={}'.format(API_KEY, QUERY)
     r = requests.get(url = URL_ID)
-    results = r.json()['results']
+    returnedData = r.json()['results']
     cachedData = []
-    for result in results:
+    for result in returnedData:
         vidId = result["id"]
         vidType = result["media_type"]
         if str(vidType) == "tv":
@@ -114,15 +116,9 @@ def getShowInfo(QUERY_TYPE, QUERY_ID):
 
             tmpData.append(baseURL + item["cardLink"])
 
-            print(item["cardTitle"])
-
             tmpData.append(item["cardTitle"])
 
-            print(item["cardDescription"])
-
             tmpData.append(item["cardDescription"])
-
-            print(item["cardImage"]["retinaUrl"])
 
             tmpData.append(item["cardImage"]["retinaUrl"])
 
@@ -154,6 +150,17 @@ def getShowInfo(QUERY_TYPE, QUERY_ID):
     else:
         mainData = "Feature not yet added!"
     return mainData
+
+async def downloadShow(QUERY):
+        ydl_opts = {
+            'geo_bypass_country': 'au',
+            'quiet': True,
+            'outtmpl': '{Download}%(title)s - %(alt_title)s.%(ext)s'.format(Download=DOWNLOAD_URL)
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            print("Downloading file")
+            await ydl.download(QUERY)
+            print("Downloaded file")
 
 def getTorrents(QUERY):
     URL = 'http://sg.media-imdb.com/suggests/{}/{}.json'.format(QUERY[0].lower(), QUERY.lower())

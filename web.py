@@ -1,5 +1,5 @@
-import sys
-from request import getShows, getShowInfo
+import sys, asyncio
+from request import getShows, getShowInfo, downloadShow
 from flask import Flask, request, render_template, Markup
 app = Flask(__name__)
 
@@ -7,7 +7,7 @@ app = Flask(__name__)
 def index():
   return render_template("main.html", pageTitle="Home")
 
-@app.route("/results/", methods=['GET', 'POST'])
+@app.route("/shows/", methods=['GET', 'POST'])
 def results():
   if request.method == 'POST':
     name = request.form.get('name').title()
@@ -17,7 +17,7 @@ def results():
 
     for show in shows:
       if show[1] != 0 and show[2] != 0:
-        showsHTML += '''<div class="panel" onclick="location.href='/results/{showID}-{type}'">
+        showsHTML += '''<div class="panel" onclick="location.href='/shows/{showID}-{type}'">
         <h1>{showTitle}</h1>
         <div class="overlay-container">
           <img src="{imgURL}" alt="{showTitle}" id="picture" onload="imgSize(this);">
@@ -33,18 +33,36 @@ def results():
     return '''<h1>Huh?</h1>
     <p>Something messed up, try again.</p>'''
 
-@app.route('/results/<pageID>-<pageType>', methods=['GET', 'POST'])
+@app.route('/shows/<pageID>-<pageType>', methods=['GET', 'POST'])
 def resultsInfo(pageID, pageType):
-  data = getShowInfo(pageType, pageID)
+  if request.method == 'GET':
+    data = getShowInfo(pageType, pageID)
+    
+    rawHTML = ""
 
-  rawHTML = ""
+    for info in data:
+      rawHTML += '''<div class="panel"">
+          <div class="well">
+              <h1>{Name}</h1>
+              <div class="overlay-container">
+                <img src="{Poster}" alt="{Description}" id="picture" onload="imgSize(this);">
+                <div class="overlay">
+                  <p>{Description}</p>
+                  <form action="" method="POST"><input type="hidden" name="url" value="{DownloadUrl}"/><button type="submit" class="btn btn-primary">Download</button></form>
+                </div>
+              </div>
+          </div>
+      </div>'''.format(Name=info[1], Description=info[2], Poster=info[3], DownloadUrl=info[0])
+    return render_template('downloads.html', pageTitle="Downloads", downloadContent=Markup(rawHTML))
+  elif request.method == 'POST':
+    downloadList = []
+    downloadList.append(request.form.get('url'))
+    print(downloadList)
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(downloadShow(downloadList))
+    loop.close()
+    return request.form.get('url')
 
-  for info in data:
-    rawHTML += '''<h1>{Name}</h1>
-    <p>{Description}<p>
-    <br>'''.format(Name=info[1], Description=info[2])
-  
-  return render_template('downloads.html', downloadContent=Markup(rawHTML))
 
 @app.route('/raw/', methods=['GET', 'POST'])
 def raw():
@@ -58,4 +76,4 @@ def raw():
     <p>Something messed up, try again.</p>'''
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=8080)
+  app.run(host='0.0.0.0', port=8080, debug=True)
