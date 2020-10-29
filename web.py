@@ -8,11 +8,14 @@ def index():
   return render_template("main.html", pageTitle="Home")
 
 @app.route("/shows/", methods=['GET', 'POST'])
+def showsLoading():
+  return render_template("loading.html", pageTitle="Loading...")
+
+@app.route("/show/", methods=['GET', 'POST'])
 def results():
   if request.method == 'POST':
     name = request.form.get('name').title()
     shows = getShows(name)
-    
     showsHTML = ""
 
     for show in shows:
@@ -26,7 +29,6 @@ def results():
           </div>
         </div>
       </div>'''.format(showTitle=show[0], showID=show[5], type=show[6], imgURL=show[4], seasons=show[1], episodes=show[2], genre=", ".join(show[3]), genreName=", Genres:" if len(show[3]) > 1 else ", Genre:" if len(show[3]) == 1 else "")
-         #
     return render_template("results.html", pageTitle=name, resultInfo=Markup(showsHTML))
     #return "NULL"
   elif request.method == 'GET':
@@ -37,7 +39,6 @@ def results():
 def resultsInfo(pageID, pageType):
   if request.method == 'GET':
     data = getShowInfo(pageType, pageID)
-    
     rawHTML = ""
 
     for info in data:
